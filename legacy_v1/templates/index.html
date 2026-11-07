@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="color-scheme" content="dark">
+    <meta name="description" content="Turn a YouTube lecture into notes, flashcards and a quiz. Transcripts are processed in memory and never stored.">
+    <title>呼吸 — Study Lab</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;600;800;900&family=Shippori+Mincho:wght@400;600;800&family=Yomogi&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<!-- Paper and ink layers. Decorative only; hidden from assistive tech. -->
+<div class="paper" aria-hidden="true">
+    <div class="paper__grain"></div>
+    <div class="paper__seigaiha"></div>
+    <div class="paper__asanoha"></div>
+    <div class="paper__vignette"></div>
+</div>
+
+<!-- The load-in slash. Removed from the flow once it has played. -->
+<div class="slash" id="slash-curtain" aria-hidden="true">
+    <span class="slash__blade"></span>
+</div>
+
+<div class="dust" id="dust-field" aria-hidden="true"></div>
+
+<header class="masthead">
+    <a class="masthead__brand" href="#" id="brand-home">
+        <span class="masthead__mark" aria-hidden="true">壱</span>
+        <span class="masthead__wordmark">
+            <span class="masthead__ja">学習研究室</span>
+            <span class="masthead__en">Study Lab</span>
+        </span>
+    </a>
+
+    <div class="masthead__search" role="search">
+        <label class="u-sr-only" for="search-input">Search this lecture</label>
+        <input
+            type="search"
+            id="search-input"
+            class="masthead__field"
+            placeholder="Search notes, cards, quiz…"
+            autocomplete="off"
+            spellcheck="false"
+            maxlength="120">
+        <span class="masthead__searchmark" aria-hidden="true">検</span>
+    </div>
+</header>
+
+<!-- ══ Landing ═══════════════════════════════════════════════════ -->
+
+<main id="landing-page" class="landing">
+
+    <section class="hero">
+        <p class="hero__eyebrow" data-reveal>
+            <span class="hero__eyebrow-ja">全集中</span>
+            Total concentration on one lecture
+        </p>
+
+        <h1 class="hero__title" data-reveal>
+            <span class="hero__line hero__line--1">A lecture</span>
+            <span class="hero__line hero__line--2">you can</span>
+            <span class="hero__line hero__line--3">actually
+                <em class="hero__cut">hold</em>
+            </span>
+        </h1>
+
+        <p class="hero__standfirst" data-reveal>
+            Paste a YouTube link. You get the transcript broken into topics with
+            timestamps, notes you can read straight through, flashcards, memory
+            hooks and a quiz that marks itself.
+        </p>
+
+        <span class="hero__kanji" aria-hidden="true">呼吸</span>
+
+        <aside class="hero__margin" aria-hidden="true">
+            <span class="hero__margin-note">壁</span>
+            <span class="hero__margin-note">nothing is kept<br>after the tab closes</span>
+        </aside>
+    </section>
+
+    <!-- The one live thing on the page. -->
+    <section class="intake" aria-labelledby="intake-heading">
+        <div class="intake__panel">
+            <div class="intake__rule" aria-hidden="true"></div>
+
+            <h2 class="intake__heading" id="intake-heading">
+                <span class="intake__heading-ja">入力</span>
+                Give it a lecture
+            </h2>
+
+            <form id="study-form" class="intake__form" novalidate autocomplete="off">
+                <div class="intake__row">
+                    <label class="intake__label" for="youtube-url">YouTube link</label>
+                    <input
+                        type="url"
+                        id="youtube-url"
+                        class="intake__input"
+                        name="url"
+                        placeholder="youtube.com/watch?v=…"
+                        maxlength="2048"
+                        spellcheck="false"
+                        autocapitalize="off"
+                        required>
+                </div>
+
+                <button type="submit" id="analyze-btn" class="seal" data-magnetic>
+                    <span class="seal__ring" aria-hidden="true"></span>
+                    <span class="seal__ja" aria-hidden="true">読</span>
+                    <span class="input-block__btn-text seal__label">Read it</span>
+                </button>
+            </form>
+
+            <p class="intake__fineprint">
+                The transcript is held in memory while your material is written,
+                then dropped. It is never saved to a database, a file, or your
+                browser's storage.
+            </p>
+        </div>
+
+        <ol class="steps" aria-label="What happens after you paste a link">
+            <li class="steps__item" data-reveal>
+                <span class="steps__num" aria-hidden="true">壱</span>
+                <h3 class="steps__title">The transcript is fetched</h3>
+                <p class="steps__body">Only youtube.com and youtu.be are reachable. Anything else is refused before a request leaves the server.</p>
+            </li>
+            <li class="steps__item" data-reveal>
+                <span class="steps__num" aria-hidden="true">弐</span>
+                <h3 class="steps__title">It is read as text, not orders</h3>
+                <p class="steps__body">The transcript is fenced off from the instructions, so a line like "ignore all previous instructions" is studied, not obeyed.</p>
+            </li>
+            <li class="steps__item" data-reveal>
+                <span class="steps__num" aria-hidden="true">参</span>
+                <h3 class="steps__title">Every piece is checked</h3>
+                <p class="steps__body">Each card, question and node has to match a schema before it reaches this page. Malformed ones are dropped.</p>
+            </li>
+        </ol>
+    </section>
+</main>
+
+<!-- ══ Dashboard ═════════════════════════════════════════════════ -->
+
+<div id="dashboard" class="dash" style="display: none;">
+
+    <section class="dash__masthead">
+        <div class="dash__meta">
+            <span class="dash__chip" id="dash-lang">EN</span>
+            <span class="dash__chip dash__chip--quiet" id="dash-type">MANUAL</span>
+            <span class="dash__chip dash__chip--quiet" id="dash-topics-count">0 TOPICS</span>
+        </div>
+
+        <h2 class="dash__title" id="dash-title">Lecture analysis</h2>
+
+        <p class="dash__overview" id="dash-overview"></p>
+
+        <span class="dash__kanji" aria-hidden="true">解</span>
+    </section>
+
+    <div class="tabs" id="dash-nav" role="tablist" aria-label="Study material">
+        <button type="button" class="dash-nav__tab dash-nav__tab--active" data-tab="overview" role="tab" aria-selected="true" aria-controls="tab-overview">
+            <span class="dash-nav__ja" aria-hidden="true">概要</span>
+            <span class="dash-nav__en">Overview</span>
+        </button>
+        <button type="button" class="dash-nav__tab" data-tab="notes" role="tab" aria-selected="false" aria-controls="tab-notes">
+            <span class="dash-nav__ja" aria-hidden="true">ノート</span>
+            <span class="dash-nav__en">Notes</span>
+        </button>
+        <button type="button" class="dash-nav__tab" data-tab="flowchart" role="tab" aria-selected="false" aria-controls="tab-flowchart">
+            <span class="dash-nav__ja" aria-hidden="true">流れ</span>
+            <span class="dash-nav__en">Flow</span>
+        </button>
+        <button type="button" class="dash-nav__tab" data-tab="flashcards" role="tab" aria-selected="false" aria-controls="tab-flashcards">
+            <span class="dash-nav__ja" aria-hidden="true">札</span>
+            <span class="dash-nav__en">Cards</span>
+        </button>
+        <button type="button" class="dash-nav__tab" data-tab="memory" role="tab" aria-selected="false" aria-controls="tab-memory">
+            <span class="dash-nav__ja" aria-hidden="true">記憶</span>
+            <span class="dash-nav__en">Memory</span>
+        </button>
+        <button type="button" class="dash-nav__tab" data-tab="quiz" role="tab" aria-selected="false" aria-controls="tab-quiz">
+            <span class="dash-nav__ja" aria-hidden="true">試験</span>
+            <span class="dash-nav__en">Quiz</span>
+        </button>
+    </div>
+
+    <div class="panels">
+
+        <!-- Overview -->
+        <section id="tab-overview" class="tab-content tab-content--active" role="tabpanel" tabindex="-1">
+            <div class="spread">
+                <div class="spread__lead">
+                    <h3 class="panel-heading">
+                        <span class="panel-heading__ja" aria-hidden="true">要点</span>
+                        The short version
+                    </h3>
+                    <ul class="summary-list" id="quick-summary"></ul>
+                </div>
+
+                <div class="spread__aside">
+                    <h3 class="panel-heading">
+                        <span class="panel-heading__ja" aria-hidden="true">章</span>
+                        Where things happen
+                    </h3>
+                    <p class="panel-note">Each timestamp opens the video at that moment in a new tab.</p>
+                    <div class="topics" id="topic-timeline"></div>
+                </div>
+            </div>
+
+            <div class="longform">
+                <h3 class="panel-heading">
+                    <span class="panel-heading__ja" aria-hidden="true">詳細</span>
+                    The long version
+                </h3>
+                <div class="prose" id="detailed-summary"></div>
+            </div>
+        </section>
+
+        <!-- Notes -->
+        <section id="tab-notes" class="tab-content" role="tabpanel" tabindex="-1">
+            <h3 class="panel-heading panel-heading--wide">
+                <span class="panel-heading__ja" aria-hidden="true">ノート</span>
+                Lecture notes
+            </h3>
+            <div class="prose prose--notes" id="notes-content"></div>
+        </section>
+
+        <!-- Flowchart -->
+        <section id="tab-flowchart" class="tab-content" role="tabpanel" tabindex="-1">
+            <h3 class="panel-heading panel-heading--wide" id="flowchart-title">Process flow</h3>
+            <div class="flowchart" id="flowchart-canvas"></div>
+        </section>
+
+        <!-- Flashcards -->
+        <section id="tab-flashcards" class="tab-content" role="tabpanel" tabindex="-1">
+            <div class="deck">
+                <div class="deck__head">
+                    <h3 class="panel-heading">
+                        <span class="panel-heading__ja" aria-hidden="true">札</span>
+                        Flashcards
+                    </h3>
+                    <p class="deck__count">
+                        <span id="flash-current">00</span><span class="deck__slash" aria-hidden="true">/</span><span id="flash-total">00</span>
+                    </p>
+                </div>
+
+                <div class="flash-filter" id="flash-filter" role="group" aria-label="Filter cards by topic"></div>
+
+                <div class="flashcard" id="flashcard" role="button" tabindex="0" aria-label="Flip card">
+                    <div class="flashcard__inner" id="flashcard-inner">
+                        <div class="flashcard__face flashcard__face--front">
+                            <span class="flashcard__difficulty" id="flash-difficulty"></span>
+                            <p class="flashcard__question" id="flash-question"></p>
+                            <span class="flashcard__hint">Click, or press space, to turn it over</span>
+                        </div>
+                        <div class="flashcard__face flashcard__face--back">
+                            <span class="flashcard__topic" id="flash-topic"></span>
+                            <p class="flashcard__answer" id="flash-answer"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="deck__controls">
+                    <button type="button" class="ctrl" id="flash-prev" data-magnetic>
+                        <span aria-hidden="true">←</span> Previous
+                    </button>
+                    <button type="button" class="ctrl ctrl--primary" id="flash-flip" data-magnetic>Turn over</button>
+                    <button type="button" class="ctrl" id="flash-next" data-magnetic>
+                        Next <span aria-hidden="true">→</span>
+                    </button>
+                </div>
+
+                <p class="deck__keys">Arrow keys move through the deck. Progress is not saved.</p>
+            </div>
+        </section>
+
+        <!-- Memory -->
+        <section id="tab-memory" class="tab-content" role="tabpanel" tabindex="-1">
+            <h3 class="panel-heading panel-heading--wide">
+                <span class="panel-heading__ja" aria-hidden="true">記憶</span>
+                Things worth remembering
+            </h3>
+            <div class="memory-grid" id="memory-grid"></div>
+        </section>
+
+        <!-- Quiz -->
+        <section id="tab-quiz" class="tab-content" role="tabpanel" tabindex="-1">
+            <h3 class="panel-heading panel-heading--wide">
+                <span class="panel-heading__ja" aria-hidden="true">試験</span>
+                Test yourself
+            </h3>
+
+            <div class="quiz" id="quiz-container"></div>
+
+            <div class="quiz-score" id="quiz-score" style="display: none;" role="status">
+                <span class="quiz-score__ja" aria-hidden="true">結果</span>
+                <p class="quiz-score__value" id="quiz-score-value">0/0</p>
+                <button type="button" class="ctrl ctrl--primary" id="quiz-retry" data-magnetic>Start over</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Search results overlay -->
+    <div class="results" id="search-results" style="display: none;" role="region" aria-label="Search results">
+        <div class="results__head">
+            <h2 class="results__title">
+                <span class="results__ja" aria-hidden="true">検索</span>
+                Matches
+            </h2>
+            <button type="button" class="results__close" id="search-close" aria-label="Close search results">Close</button>
+        </div>
+        <div class="results__list" id="search-results-list"></div>
+    </div>
+</div>
+
+<!-- ══ Overlays ══════════════════════════════════════════════════ -->
+
+<div class="loader" id="loader" role="status" aria-live="polite">
+    <div class="loader__stage">
+        <span class="loader__kanji" aria-hidden="true">呼吸</span>
+        <div class="loader__breath" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <p class="loader__text">Reading the lecture</p>
+        <p class="loader__sub">Fetching the transcript, then writing your material. This takes a minute on a long video.</p>
+    </div>
+</div>
+
+<div class="toast" id="error-toast" role="alert" aria-live="assertive">
+    <span class="toast__mark" aria-hidden="true">禁</span>
+    <p class="toast__msg" id="error-msg"></p>
+</div>
+
+<footer class="foot">
+    <p class="foot__ja" aria-hidden="true">人工知能学習</p>
+    <p class="foot__line">Transcripts and generated material live in memory for one page view. Nothing is written to your browser's storage.</p>
+    <p class="foot__vol">Vol. 01</p>
+</footer>
+
+<!-- SafeDOM must load first: every module below builds nodes through it. -->
+<script src="/static/js/dom-safe.js"></script>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/flashcards.js"></script>
+<script src="/static/js/quiz.js"></script>
+<script src="/static/js/flowchart.js"></script>
+<script src="/static/js/motion.js"></script>
+</body>
+</html>

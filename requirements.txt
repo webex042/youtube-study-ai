@@ -1,0 +1,13 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+jinja2==3.1.4
+python-dotenv==1.0.1
+python-multipart>=0.0.9
+youtube-transcript-api>=1.2.0
+# 3.x switched the default API version and HTTP client; this app is verified on 2.x.
+google-genai>=2.25.0,<3
+openai==1.51.0
+pydantic>=2.13.5
+pypdf>=6.0
+httpx>=0.28.1
+pytest==8.3.3

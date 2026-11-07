@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en" data-page="{{ page }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0f0f0f">
+  <title>AI Study Lab</title>
+  <link rel="icon" href="/static/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/vendor/fonts/google-sans.css">
+  <link rel="stylesheet" href="/static/vendor/fonts/google-sans-code.css">
+  <link rel="stylesheet" href="/static/vendor/fonts/material-symbols.css">
+  <link rel="stylesheet" href="/static/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="/static/css/app.css?v={{ version }}">
+  <script src="/static/vendor/katex/katex.min.js" defer></script>
+  <script type="module" src="/static/js/app.js?v={{ version }}"></script>
+</head>
+<body class="is-loading" data-notebook-id="{{ notebook_id }}">
+  <div id="app" aria-live="polite"></div>
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">AI Study Lab needs JavaScript enabled.</p></noscript>
+</body>
+</html>

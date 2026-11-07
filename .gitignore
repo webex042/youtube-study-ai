@@ -1,0 +1,48 @@
+# ── Secrets ──────────────────────────────────────────────────────
+# Never commit real environment files. The example template is the
+# only one that belongs in version control.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials.json
+service-account*.json
+
+# ── Python ───────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ── IDE ──────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS ───────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Logs / local data ────────────────────────────────────────────
+*.log
+logs/
+*.sqlite3
+*.db
+
+# ── App data (database, uploads, generated audio) ───────────────
+data/
